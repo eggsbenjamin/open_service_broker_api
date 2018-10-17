@@ -14,16 +14,16 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestServiceInstanceRepository(t *testing.T) {
-	t.Run("GetByID", func(t *testing.T) {
+func TestServicePlanRepository(t *testing.T) {
+	t.Run("GetByServiceID", func(t *testing.T) {
 		t.Run("db error", func(t *testing.T) {
 			dummyErr := errors.New("error")
 			ctrl := gomock.NewController(t)
 			mockDB := db.NewMockDB(ctrl)
-			mockDB.EXPECT().Get(gomock.Any(), gomock.Any(), gomock.Any()).Return(dummyErr)
+			mockDB.EXPECT().Select(gomock.Any(), gomock.Any(), gomock.Any()).Return(dummyErr)
 
-			repo := repository.NewServiceInstanceRepository(mockDB)
-			_, err := repo.GetByID(1)
+			repo := repository.NewServicePlanRepository(mockDB)
+			_, err := repo.GetByServiceID(1)
 			require.Equal(t, dummyErr, errors.Cause(err))
 			ctrl.Finish()
 		})
@@ -31,10 +31,10 @@ func TestServiceInstanceRepository(t *testing.T) {
 		t.Run("not found", func(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			mockDB := db.NewMockDB(ctrl)
-			mockDB.EXPECT().Get(gomock.Any(), gomock.Any(), gomock.Any()).Return(sql.ErrNoRows)
+			mockDB.EXPECT().Select(gomock.Any(), gomock.Any(), gomock.Any()).Return(sql.ErrNoRows)
 
-			repo := repository.NewServiceInstanceRepository(mockDB)
-			_, err := repo.GetByID(1)
+			repo := repository.NewServicePlanRepository(mockDB)
+			_, err := repo.GetByServiceID(1)
 			require.Equal(t, repository.ErrNotFound, errors.Cause(err))
 			ctrl.Finish()
 		})
@@ -46,8 +46,8 @@ func TestServiceInstanceRepository(t *testing.T) {
 		mockDB := db.NewMockDB(ctrl)
 		mockDB.EXPECT().NamedQuery(gomock.Any(), gomock.Any()).Return(nil, dummyErr)
 
-		repo := repository.NewServiceInstanceRepository(mockDB)
-		err := repo.Create(&models.DBServiceInstance{})
+		repo := repository.NewServicePlanRepository(mockDB)
+		err := repo.Create(&models.DBServicePlan{})
 		require.Equal(t, dummyErr, errors.Cause(err))
 		ctrl.Finish()
 	})

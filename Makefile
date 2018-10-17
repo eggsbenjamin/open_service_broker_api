@@ -10,9 +10,11 @@ setup_db:
 	docker-compose up -d postgresql
 
 unit_test:
+	echo "\nunit tests\n"
 	go test ./... -tags=unit
 
 integration_test:
+	echo "\nintegration tests\n"
 	go test ./... -tags=integration
 
 test: unit_test integration_test

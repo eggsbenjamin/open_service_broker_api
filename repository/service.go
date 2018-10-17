@@ -1,3 +1,5 @@
+//go:generate mockgen -package repository -source=service.go -destination service_mock.go
+
 package repository
 
 import (
@@ -15,12 +17,14 @@ type ServiceRepository interface {
 }
 
 type serviceRepository struct {
-	db db.DB
+	db              db.DB
+	servicePlanRepo ServicePlanRepository
 }
 
-func NewServiceRepository(db db.DB) ServiceRepository {
+func NewServiceRepository(db db.DB, servicePlanRepo ServicePlanRepository) ServiceRepository {
 	return &serviceRepository{
-		db: db,
+		db:              db,
+		servicePlanRepo: servicePlanRepo,
 	}
 }
 
@@ -42,27 +46,35 @@ func (s *serviceRepository) GetByServiceID(id uuid.UUID) (*models.DBService, err
 		return nil, err
 	}
 
+	servicePlans, err := s.servicePlanRepo.GetByServiceID(out.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	out.Plans = servicePlans
 	return out, nil
 }
 
 func (s *serviceRepository) Create(in *models.DBService) error {
-	if _, err := s.db.NamedQuery(`
+	rows, err := s.db.NamedQuery(`
 		INSERT INTO service (
 			service_id, name, description, tags, requires
 		)
 		VALUES (
 			:service_id, :name, :description, :tags, :requires
 		)
+		RETURNING *;
 	`,
-		map[string]interface{}{
-			"service_id":  in.ServiceID,
-			"name":        in.Name,
-			"description": in.Description,
-			"tags":        in.Tags,
-			"requires":    in.Requires,
-		}); err != nil {
+		in,
+	)
+	if err != nil {
 		return errors.Wrap(err, "Create: error creating service")
 	}
+	defer rows.Close()
 
-	return nil
+	if !rows.Next() {
+		return errors.New("Create: no write result")
+	}
+
+	return rows.StructScan(in)
 }

@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestServiceRepositoryIntegration(t *testing.T) {
+func TestServicePlanRepositoryIntegration(t *testing.T) {
 	t.Run("GetByServiceID", func(t *testing.T) {
 		db, err := db.NewConnection("localhost", "32768", "postgres", "postgres", "service_catalog")
 		require.NoError(t, testutils.TeardownDB(db))
@@ -34,7 +34,7 @@ func TestServiceRepositoryIntegration(t *testing.T) {
 		}
 		require.NoError(t, serviceRepo.Create(service))
 
-		servicePlans := []*models.DBServicePlan{
+		input := []*models.DBServicePlan{
 			{
 				ServiceID: service.ID,
 				Name:      "test1",
@@ -45,17 +45,16 @@ func TestServiceRepositoryIntegration(t *testing.T) {
 			},
 		}
 
-		for _, servicePlan := range servicePlans {
-			require.NoError(t, servicePlanRepo.Create(servicePlan))
+		for _, in := range input {
+			require.NoError(t, servicePlanRepo.Create(in))
 		}
 
-		result, err := serviceRepo.GetByServiceID(id)
+		servicePlans, err := servicePlanRepo.GetByServiceID(service.ID)
 		require.NoError(t, err)
-		require.NotZero(t, result.ID)
-		require.Equal(t, service.Name, result.Name)
-		require.Equal(t, service.Description, result.Description)
-		require.JSONEq(t, string(service.Tags), string(result.Tags))
-		require.JSONEq(t, string(service.Requires), string(result.Requires))
-		require.Equal(t, len(servicePlans), len(result.Plans))
+		require.Equal(t, len(input), len(servicePlans))
+
+		for i := range servicePlans {
+			require.Equal(t, input[i], servicePlans[i])
+		}
 	})
 }

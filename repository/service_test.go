@@ -21,20 +21,24 @@ func TestServiceRepository(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			mockDB := db.NewMockDB(ctrl)
 			mockDB.EXPECT().Get(gomock.Any(), gomock.Any(), gomock.Any()).Return(dummyErr)
+			mockServicePlanRepo := repository.NewMockServicePlanRepository(ctrl)
 
-			repo := repository.NewServiceRepository(mockDB)
+			repo := repository.NewServiceRepository(mockDB, mockServicePlanRepo)
 			_, err := repo.GetByServiceID("")
 			require.Equal(t, dummyErr, errors.Cause(err))
+			ctrl.Finish()
 		})
 
 		t.Run("not found", func(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			mockDB := db.NewMockDB(ctrl)
 			mockDB.EXPECT().Get(gomock.Any(), gomock.Any(), gomock.Any()).Return(sql.ErrNoRows)
+			mockServicePlanRepo := repository.NewMockServicePlanRepository(ctrl)
 
-			repo := repository.NewServiceRepository(mockDB)
+			repo := repository.NewServiceRepository(mockDB, mockServicePlanRepo)
 			_, err := repo.GetByServiceID("")
 			require.Equal(t, repository.ErrNotFound, errors.Cause(err))
+			ctrl.Finish()
 		})
 	})
 
@@ -43,9 +47,11 @@ func TestServiceRepository(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		mockDB := db.NewMockDB(ctrl)
 		mockDB.EXPECT().NamedQuery(gomock.Any(), gomock.Any()).Return(nil, dummyErr)
+		mockServicePlanRepo := repository.NewMockServicePlanRepository(ctrl)
 
-		repo := repository.NewServiceRepository(mockDB)
-		err := repo.Create(&models.DBService{})
+		serviceRepo := repository.NewServiceRepository(mockDB, mockServicePlanRepo)
+		err := serviceRepo.Create(&models.DBService{})
 		require.Equal(t, dummyErr, errors.Cause(err))
+		ctrl.Finish()
 	})
 }

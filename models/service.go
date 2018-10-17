@@ -13,4 +13,5 @@ type DBService struct {
 	Description string          `db:"description"`
 	Tags        json.RawMessage `db:"tags"`
 	Requires    json.RawMessage `db:"requires"`
+	Plans       []*DBServicePlan
 }

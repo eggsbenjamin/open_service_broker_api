@@ -10,7 +10,7 @@ func TeardownDB(db db.DB) error {
 	// note: order of table deletion is important
 	tables := []string{
 		"service_instance",
-		"plan",
+		"service_plan",
 		"service",
 	}
 
