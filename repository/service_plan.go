@@ -7,11 +7,13 @@ import (
 
 	"github.com/eggsbenjamin/open_service_broker_api/db"
 	"github.com/eggsbenjamin/open_service_broker_api/models"
+	uuid "github.com/eggsbenjamin/open_service_broker_api/uuid"
 	"github.com/lib/pq"
 	"github.com/pkg/errors"
 )
 
 type ServicePlanRepository interface {
+	GetByPlanID(uuid.UUID) (*models.DBServicePlan, error)
 	GetByServiceID(int) ([]*models.DBServicePlan, error)
 	GetByServiceIDs(...int) (map[int][]*models.DBServicePlan, error)
 	Create(*models.DBServicePlan) error
@@ -27,13 +29,34 @@ func NewServicePlanRepository(db db.DB) ServicePlanRepository {
 	}
 }
 
+func (s *servicePlanRepository) GetByPlanID(id uuid.UUID) (*models.DBServicePlan, error) {
+	out := &models.DBServicePlan{}
+	if err := s.db.Get(
+		out,
+		`
+			SELECT 
+				id, plan_id, service_id, name
+			FROM service_plan
+			WHERE plan_id = $1
+		`,
+		id,
+	); err != nil {
+		if err == sql.ErrNoRows {
+			return nil, errors.Wrapf(ErrNotFound, "GetByID: no results for id: %s", id)
+		}
+		return nil, err
+	}
+
+	return out, nil
+}
+
 func (s *servicePlanRepository) GetByServiceID(id int) ([]*models.DBServicePlan, error) {
 	out := []*models.DBServicePlan{}
 	if err := s.db.Select(
 		&out,
 		`
 			SELECT 
-				id, service_id, name
+				id, plan_id, service_id, name
 			FROM service_plan
 			WHERE service_id = $1
 		`,
@@ -53,7 +76,7 @@ func (s *servicePlanRepository) GetByServiceIDs(ids ...int) (map[int][]*models.D
 	rows, err := s.db.Query(
 		`
 			SELECT 
-				id, service_id, name
+				id, plan_id, service_id, name
 			FROM service_plan
 			WHERE service_id = ANY($1)
 		`,
@@ -81,10 +104,10 @@ func (s *servicePlanRepository) GetByServiceIDs(ids ...int) (map[int][]*models.D
 func (s *servicePlanRepository) Create(in *models.DBServicePlan) error {
 	rows, err := s.db.NamedQuery(`
 			INSERT INTO service_plan (
-				service_id, name
+				plan_id, service_id, name
 			)
 			VALUES (
-				:service_id, :name 
+				:plan_id, :service_id, :name 
 			)
 			RETURNING *
 		`,

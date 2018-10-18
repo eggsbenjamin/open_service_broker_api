@@ -34,12 +34,20 @@ func TestServicePlanRepositoryIntegration(t *testing.T) {
 		}
 		require.NoError(t, serviceRepo.Create(service))
 
+		id2, err := uuid.New()
+		require.NoError(t, err)
+
+		id3, err := uuid.New()
+		require.NoError(t, err)
+
 		input := []*models.DBServicePlan{
 			{
+				PlanID:    id2,
 				ServiceID: service.ID,
 				Name:      "test1",
 			},
 			{
+				PlanID:    id3,
 				ServiceID: service.ID,
 				Name:      "test2",
 			},
@@ -91,16 +99,28 @@ func TestServicePlanRepositoryIntegration(t *testing.T) {
 		}
 		require.NoError(t, serviceRepo.Create(service2))
 
+		id3, err := uuid.New()
+		require.NoError(t, err)
+
+		id4, err := uuid.New()
+		require.NoError(t, err)
+
+		id5, err := uuid.New()
+		require.NoError(t, err)
+
 		input := []*models.DBServicePlan{
 			{
+				PlanID:    id3,
 				ServiceID: service1.ID,
 				Name:      "test1",
 			},
 			{
+				PlanID:    id4,
 				ServiceID: service1.ID,
 				Name:      "test2",
 			},
 			{
+				PlanID:    id5,
 				ServiceID: service2.ID,
 				Name:      "test3",
 			},

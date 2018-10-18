@@ -26,8 +26,17 @@ func NewServiceInstanceRepository(db db.DB) ServiceInstanceRepository {
 }
 
 func (s *serviceInstanceRepository) GetByID(id int) (*models.DBServiceInstance, error) {
-	var out *models.DBServiceInstance
-	if err := s.db.Get(&out, ``, id); err != nil {
+	out := &models.DBServiceInstance{}
+	if err := s.db.Get(
+		out,
+		`
+			SELECT 
+				id, plan_id, context, parameters
+			FROM service_instance
+			WHERE id = $1
+		`,
+		id,
+	); err != nil {
 		if err == sql.ErrNoRows {
 			return nil, errors.Wrapf(ErrNotFound, "GetByID: no results for id: %d", id)
 		}
@@ -38,9 +47,25 @@ func (s *serviceInstanceRepository) GetByID(id int) (*models.DBServiceInstance, 
 }
 
 func (s *serviceInstanceRepository) Create(in *models.DBServiceInstance) error {
-	if _, err := s.db.NamedQuery("", &in); err != nil {
-		return errors.Wrapf(err, "Create: error creating service instance")
+	rows, err := s.db.NamedQuery(`
+			INSERT INTO service_instance (
+				plan_id, context, parameters
+			)
+			VALUES (
+				:plan_id, :context, :parameters
+			)
+			RETURNING *;
+		`,
+		in,
+	)
+	if err != nil {
+		return errors.Wrap(err, "Create: error creating service instance")
+	}
+	defer rows.Close() // nolint: errcheck
+
+	if !rows.Next() {
+		return errors.New("Create: no write result")
 	}
 
-	return nil
+	return rows.StructScan(in)
 }
