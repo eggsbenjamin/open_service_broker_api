@@ -25,6 +25,7 @@ func TestCatalogService(t *testing.T) {
 			catalogSrv := service.NewCatalogService(mockServiceRepo)
 			_, err := catalogSrv.GetCatalog()
 			require.Equal(t, dummyErr, errors.Cause(err))
+			ctrl.Finish()
 		})
 
 		t.Run("success", func(t *testing.T) {
@@ -60,6 +61,7 @@ func TestCatalogService(t *testing.T) {
 			catalog, err := catalogSrv.GetCatalog()
 			require.NoError(t, err)
 			require.Equal(t, expectedCatalog, catalog)
+			ctrl.Finish()
 		})
 	})
 }

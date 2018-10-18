@@ -15,7 +15,7 @@ import (
 var _ = Describe("System", func() {
 
 	It("responds to GET /v1/catalog with the correct formatted response", func() {
-		db, err := db.NewConnection("localhost", "32768", "postgres", "postgres", "service_catalog")
+		db, err := db.NewConnection("localhost", "1234", "postgres", "postgres", "service_catalog")
 		Expect(err).NotTo(HaveOccurred())
 		err = testutils.TeardownDB(db)
 		Expect(err).NotTo(HaveOccurred())

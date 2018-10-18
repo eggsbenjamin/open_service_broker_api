@@ -14,7 +14,8 @@ type DBServiceInstance struct {
 }
 
 type ServiceInstance struct {
-	ServiceID uuid.UUID       `json:"plan_id"`
+	ID        uuid.UUID       `json:"id"`
+	ServiceID uuid.UUID       `json:"service_id"`
 	PlanID    uuid.UUID       `json:"plan_id"`
 	Ctx       json.RawMessage `json:"context"`
 	Params    json.RawMessage `json:"parameters"`

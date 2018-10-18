@@ -15,9 +15,9 @@ import (
 
 func TestServiceInstanceRepositoryIntegration(t *testing.T) {
 	t.Run("Create", func(t *testing.T) {
-		db, err := db.NewConnection("localhost", "32768", "postgres", "postgres", "service_catalog")
-		require.NoError(t, testutils.TeardownDB(db))
+		db, err := db.NewConnection("localhost", "1234", "postgres", "postgres", "service_catalog")
 		require.NoError(t, err)
+		require.NoError(t, testutils.TeardownDB(db))
 		defer testutils.TeardownDB(db)
 
 		serviceInstanceRepo := repository.NewServiceInstanceRepository(db)
