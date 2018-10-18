@@ -46,6 +46,23 @@ func (mr *MockServicePlanRepositoryMockRecorder) GetByServiceID(arg0 interface{}
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByServiceID", reflect.TypeOf((*MockServicePlanRepository)(nil).GetByServiceID), arg0)
 }
 
+// GetByServiceIDs mocks base method
+func (m *MockServicePlanRepository) GetByServiceIDs(arg0 ...int) (map[int][]*models.DBServicePlan, error) {
+	varargs := []interface{}{}
+	for _, a := range arg0 {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "GetByServiceIDs", varargs...)
+	ret0, _ := ret[0].(map[int][]*models.DBServicePlan)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetByServiceIDs indicates an expected call of GetByServiceIDs
+func (mr *MockServicePlanRepositoryMockRecorder) GetByServiceIDs(arg0 ...interface{}) *gomock.Call {
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByServiceIDs", reflect.TypeOf((*MockServicePlanRepository)(nil).GetByServiceIDs), arg0...)
+}
+
 // Create mocks base method
 func (m *MockServicePlanRepository) Create(arg0 *models.DBServicePlan) error {
 	ret := m.ctrl.Call(m, "Create", arg0)

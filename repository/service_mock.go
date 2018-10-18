@@ -34,6 +34,19 @@ func (m *MockServiceRepository) EXPECT() *MockServiceRepositoryMockRecorder {
 	return m.recorder
 }
 
+// GetAll mocks base method
+func (m *MockServiceRepository) GetAll() ([]*models.DBService, error) {
+	ret := m.ctrl.Call(m, "GetAll")
+	ret0, _ := ret[0].([]*models.DBService)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetAll indicates an expected call of GetAll
+func (mr *MockServiceRepositoryMockRecorder) GetAll() *gomock.Call {
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAll", reflect.TypeOf((*MockServiceRepository)(nil).GetAll))
+}
+
 // GetByServiceID mocks base method
 func (m *MockServiceRepository) GetByServiceID(arg0 uuid.UUID) (*models.DBService, error) {
 	ret := m.ctrl.Call(m, "GetByServiceID", arg0)

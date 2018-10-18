@@ -12,6 +12,7 @@ import (
 )
 
 type ServiceRepository interface {
+	GetAll() ([]*models.DBService, error)
 	GetByServiceID(uuid.UUID) (*models.DBService, error)
 	Create(*models.DBService) error
 }
@@ -26,6 +27,40 @@ func NewServiceRepository(db db.DB, servicePlanRepo ServicePlanRepository) Servi
 		db:              db,
 		servicePlanRepo: servicePlanRepo,
 	}
+}
+
+func (s *serviceRepository) GetAll() ([]*models.DBService, error) {
+	out := []*models.DBService{}
+	if err := s.db.Select(
+		&out,
+		`
+			SELECT 
+				id, service_id, name, description, tags, requires
+			FROM service
+		`,
+	); err != nil {
+		return nil, err
+	}
+
+	if len(out) == 0 {
+		return nil, errors.Wrapf(ErrNotFound, "GetAll: no results")
+	}
+
+	serviceIDs := []int{}
+	for _, service := range out {
+		serviceIDs = append(serviceIDs, service.ID)
+	}
+
+	servicePlans, err := s.servicePlanRepo.GetByServiceIDs(serviceIDs...)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, service := range out {
+		service.Plans = append(service.Plans, servicePlans[service.ID]...)
+	}
+
+	return out, nil
 }
 
 func (s *serviceRepository) GetByServiceID(id uuid.UUID) (*models.DBService, error) {

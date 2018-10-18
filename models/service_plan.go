@@ -5,3 +5,8 @@ type DBServicePlan struct {
 	ServiceID int    `db:"service_id"`
 	Name      string `db:"name"`
 }
+
+type ServicePlan struct {
+	ServiceID int    `json:"service_id"`
+	Name      string `json:"name"`
+}

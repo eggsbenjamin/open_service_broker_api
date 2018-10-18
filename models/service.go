@@ -15,3 +15,12 @@ type DBService struct {
 	Requires    json.RawMessage `db:"requires"`
 	Plans       []*DBServicePlan
 }
+
+type Service struct {
+	ID          uuid.UUID       `json:"service_id"`
+	Name        string          `json:"name"`
+	Description string          `json:"description"`
+	Tags        json.RawMessage `json:"tags"`
+	Requires    json.RawMessage `json:"requires"`
+	Plans       []*ServicePlan  `json:"plans"`
+}

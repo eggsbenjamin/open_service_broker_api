@@ -7,11 +7,13 @@ import (
 
 	"github.com/eggsbenjamin/open_service_broker_api/db"
 	"github.com/eggsbenjamin/open_service_broker_api/models"
+	"github.com/lib/pq"
 	"github.com/pkg/errors"
 )
 
 type ServicePlanRepository interface {
 	GetByServiceID(int) ([]*models.DBServicePlan, error)
+	GetByServiceIDs(...int) (map[int][]*models.DBServicePlan, error)
 	Create(*models.DBServicePlan) error
 }
 
@@ -41,6 +43,36 @@ func (s *servicePlanRepository) GetByServiceID(id int) ([]*models.DBServicePlan,
 			return nil, errors.Wrapf(ErrNotFound, "GetByID: no results for id: %s", id)
 		}
 		return nil, err
+	}
+
+	return out, nil
+}
+
+func (s *servicePlanRepository) GetByServiceIDs(ids ...int) (map[int][]*models.DBServicePlan, error) {
+	out := map[int][]*models.DBServicePlan{}
+	rows, err := s.db.Query(
+		`
+			SELECT 
+				id, service_id, name
+			FROM service_plan
+			WHERE service_id = ANY($1)
+		`,
+		pq.Array(ids),
+	)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, errors.Wrapf(ErrNotFound, "GetByIDs: no results for id: %q", ids)
+		}
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		servicePlan := &models.DBServicePlan{}
+		if err := rows.StructScan(servicePlan); err != nil {
+			return nil, errors.Wrap(err, "GetByIDs: error scanning service plan values")
+		}
+		out[servicePlan.ServiceID] = append(out[servicePlan.ServiceID], servicePlan)
 	}
 
 	return out, nil
