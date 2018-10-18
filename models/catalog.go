@@ -1,5 +1,5 @@
 package models
 
 type Catalog struct {
-	Services []*Service
+	Services []*Service `json:"services"`
 }

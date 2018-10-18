@@ -1,5 +1,7 @@
 package models
 
+import "github.com/eggsbenjamin/open_service_broker_api/uuid"
+
 type DBServicePlan struct {
 	ID        int    `db:"id"`
 	ServiceID int    `db:"service_id"`
@@ -7,6 +9,6 @@ type DBServicePlan struct {
 }
 
 type ServicePlan struct {
-	ServiceID int    `json:"service_id"`
-	Name      string `json:"name"`
+	ServiceID uuid.UUID `json:"service_id"`
+	Name      string    `json:"name"`
 }

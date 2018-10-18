@@ -17,7 +17,7 @@ type DBService struct {
 }
 
 type Service struct {
-	ID          uuid.UUID       `json:"service_id"`
+	ID          uuid.UUID       `json:"id"`
 	Name        string          `json:"name"`
 	Description string          `json:"description"`
 	Tags        json.RawMessage `json:"tags"`

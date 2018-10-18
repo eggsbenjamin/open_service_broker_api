@@ -1,0 +1,42 @@
+{
+  "services": [
+    {
+      "name" : "test-service-1",
+      "id" : "19388425-2619-424e-820c-cd575465c657",
+      "description" : "a test service",
+      "tags" : ["one", "two", "three"],
+      "requires" : {"one":"two"},
+      "plans" : [
+        {
+          "service_id": "19388425-2619-424e-820c-cd575465c657",
+          "name" : "test-service-plan-1"
+        },
+        {
+          "service_id": "19388425-2619-424e-820c-cd575465c657",
+          "name" : "test-service-plan-2"
+        }
+      ]
+    },
+    {
+      "name" : "test-service-2",
+      "id" : "19388425-2619-424e-820c-cd575465c658",
+      "description" : "a test service",
+      "tags" : ["one", "two", "three"],
+      "requires" : {"one":"two"},
+      "plans" : [
+        {
+          "service_id": "19388425-2619-424e-820c-cd575465c658",
+          "name" : "test-service-plan-3"
+        }
+      ]
+    },
+    {
+      "name" : "test-service-3",
+      "id" : "19388425-2619-424e-820c-cd575465c659",
+      "description" : "a test service",
+      "tags" : ["one", "two", "three"],
+      "requires" : {"one":"two"},
+      "plans" : null
+    }
+  ]
+}

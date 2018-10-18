@@ -65,7 +65,7 @@ func (s *servicePlanRepository) GetByServiceIDs(ids ...int) (map[int][]*models.D
 		}
 		return nil, err
 	}
-	defer rows.Close()
+	defer rows.Close() // nolint: errcheck
 
 	for rows.Next() {
 		servicePlan := &models.DBServicePlan{}
@@ -93,7 +93,7 @@ func (s *servicePlanRepository) Create(in *models.DBServicePlan) error {
 	if err != nil {
 		return errors.Wrap(err, "Create: error creating service plan")
 	}
-	defer rows.Close()
+	defer rows.Close() // nolint: errcheck
 
 	if !rows.Next() {
 		return errors.New("Create: no write result")

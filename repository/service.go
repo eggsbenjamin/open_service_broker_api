@@ -105,7 +105,7 @@ func (s *serviceRepository) Create(in *models.DBService) error {
 	if err != nil {
 		return errors.Wrap(err, "Create: error creating service")
 	}
-	defer rows.Close()
+	defer rows.Close() // nolint: errcheck
 
 	if !rows.Next() {
 		return errors.New("Create: no write result")

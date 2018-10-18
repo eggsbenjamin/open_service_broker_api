@@ -1,3 +1,5 @@
+// +build unit
+
 package service_test
 
 import (
@@ -56,6 +58,7 @@ func TestCatalogService(t *testing.T) {
 
 			catalogSrv := service.NewCatalogService(mockServiceRepo)
 			catalog, err := catalogSrv.GetCatalog()
+			require.NoError(t, err)
 			require.Equal(t, expectedCatalog, catalog)
 		})
 	})
