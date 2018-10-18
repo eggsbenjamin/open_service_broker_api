@@ -25,20 +25,29 @@ func main() {
 	}
 
 	// repos
+	serviceInstanceRepo := repository.NewServiceInstanceRepository(db)
 	servicePlanRepo := repository.NewServicePlanRepository(db)
 	serviceRepo := repository.NewServiceRepository(db, servicePlanRepo)
 
 	// services
 	catalogService := service.NewCatalogService(serviceRepo)
+	serviceInstanceService := service.NewServiceInstanceService(
+		serviceRepo,
+		servicePlanRepo,
+		serviceInstanceRepo,
+	)
 
 	// handlers
 	catalogHandlers := handlers.NewCatalogHandlers(catalogService)
+	serviceInstanceHandlers := handlers.NewServiceInstanceHandlers(serviceInstanceService)
 
 	srv := chi.NewMux()
 	srv.Route("/v1", func(r chi.Router) {
 		r.Get("/catalog", catalogHandlers.GetCatalog)
+		r.Put("/service_instances/{instance_id}", serviceInstanceHandlers.CreateServiceInstance)
 	})
 
+	log.Println("listening on :8080")
 	log.Fatal(http.ListenAndServe(":8080", srv))
 }
 

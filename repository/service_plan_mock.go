@@ -6,6 +6,7 @@ package repository
 
 import (
 	models "github.com/eggsbenjamin/open_service_broker_api/models"
+	uuid "github.com/eggsbenjamin/open_service_broker_api/uuid"
 	gomock "github.com/golang/mock/gomock"
 	reflect "reflect"
 )
@@ -31,6 +32,19 @@ func NewMockServicePlanRepository(ctrl *gomock.Controller) *MockServicePlanRepos
 // EXPECT returns an object that allows the caller to indicate expected use
 func (m *MockServicePlanRepository) EXPECT() *MockServicePlanRepositoryMockRecorder {
 	return m.recorder
+}
+
+// GetByPlanID mocks base method
+func (m *MockServicePlanRepository) GetByPlanID(arg0 uuid.UUID) (*models.DBServicePlan, error) {
+	ret := m.ctrl.Call(m, "GetByPlanID", arg0)
+	ret0, _ := ret[0].(*models.DBServicePlan)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetByPlanID indicates an expected call of GetByPlanID
+func (mr *MockServicePlanRepositoryMockRecorder) GetByPlanID(arg0 interface{}) *gomock.Call {
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByPlanID", reflect.TypeOf((*MockServicePlanRepository)(nil).GetByPlanID), arg0)
 }
 
 // GetByServiceID mocks base method
